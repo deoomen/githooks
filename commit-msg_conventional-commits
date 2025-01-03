@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# commit message should follow CC specification
+# with lower camel case scope, additional allowed characters: /-_
+
+# prevent ecs in merge commits
+if git rev-parse -q --verify MERGE_HEAD; then
+    echo "This is a merge commit. Skipping linting just in case it's a big one!"
+    exit 0
+fi
+
+ALLOWED_COMMIT_MSG_REGEX="^(Merge branch )"
+CC_COMMIT_MSG_REGEX="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(([a-zA-Z0-9\/\-_]+){1,20}?\))?:( :.+:)? .{1,100}$"
+
+# allow default git merge commit message
+if head -1 "$1" | grep -qE "${ALLOWED_COMMIT_MSG_REGEX}"; then
+    exit 0;
+fi
+
+# check commit message by regex
+if ! head -1 "$1" | grep -qE "${CC_COMMIT_MSG_REGEX}"; then
+    echo "Aborting commit. Your commit message is invalid." >&2
+    exit 1
+fi
