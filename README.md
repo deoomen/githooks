@@ -11,3 +11,4 @@ Copy the file you want to your `<project_path>/.git/hooks/` directory and cut of
 | Filename | Description |
 | --- | --- |
 | commit-msg_conventional-commits | Checks before creating a commit whether the commit title meets the requirements of Conventional Commits. |
+| prepare-commit-msg_jira_link | Add link to Jira issue in the commits footer. **You must modify this hook before use!** |

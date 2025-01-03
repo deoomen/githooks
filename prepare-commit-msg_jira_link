@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# `git prepare-commit-msg` hook for automatically apppending an issue key
+# and url to issue from the start of the current branch name to commit messages.
+
+# check if commit is merge commit or a commit ammend
+if [ $2 = "merge" ] || [ $2 = "commit" ]; then
+    exit
+fi
+
+JIRA_TASK_URL="https://<YOUR_NAME>.atlassian.net/browse/"
+PROJECT_PREFIX_REGEX="<YOUR_PREFIX>"
+ISSUE_KEY=$(git branch | grep -o "\* \(.*/\)*${PROJECT_PREFIX_REGEX}-[0-9]\+" | grep -o "${PROJECT_PREFIX_REGEX}-[0-9]\+")
+
+if [ $? -ne 0 ]; then
+    # no issue key in branch, use the default message
+    exit
+fi
+
+# issue key matched from branch prefix, apppend to commit message
+printf '%s\n\n%s: %s%s' "$(cat $1)" "${ISSUE_KEY}" "${JIRA_TASK_URL}" "${ISSUE_KEY}" > "$1"
