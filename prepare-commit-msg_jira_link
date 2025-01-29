@@ -10,10 +10,17 @@ fi
 
 JIRA_TASK_URL="https://<YOUR_NAME>.atlassian.net/browse/"
 PROJECT_PREFIX_REGEX="<YOUR_PREFIX>"
-ISSUE_KEY=$(git branch | grep -o "\* \(.*/\)*${PROJECT_PREFIX_REGEX}-[0-9]\+" | grep -o "${PROJECT_PREFIX_REGEX}-[0-9]\+")
 
+ISSUE_KEY=$(git branch | grep -o "\* \(.*/\)*${PROJECT_PREFIX_REGEX}-[0-9]\+" | grep -o "${PROJECT_PREFIX_REGEX}-[0-9]\+")
 if [ $? -ne 0 ]; then
     # no issue key in branch, use the default message
+    exit
+fi
+
+# Check if ISSUE_KEY is already in commit message
+grep -q "${ISSUE_KEY}" "$1"
+if [ $? -eq 0 ]; then
+    # issue key already in commit message, exit
     exit
 fi
 
